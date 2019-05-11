@@ -25,6 +25,32 @@ https.get('https://www.imdb.com/title/tt2911666/', (resp) => {
   console.log("Error: " + err.message);
 });
 
+https.get('https://www.rottentomatoes.com/m/pokemon_detective_pikachu', (resp) => {
+  let rotData = '';
+
+  //A chunk of data has been recieved.
+  resp.on('data', (chunk) => {
+    rotData += chunk;
+  });
+
+  //The whole response has been recieved. Print out the result.
+  resp.on('end', () => {
+
+    var rotRatingIndex = rotData.indexOf('ratingValue');
+    var rotRating = rotData.substring(rotRatingIndex + 13, rotRatingIndex + 15);
+    console.log("Rotten tomatoes rating: " + rotRating + "%");
+  });
+
+}).on("error", (err) => {
+  console.log("Error: " + err.message);
+});
+
+
+
+
+
+
+
 
 
 /*
