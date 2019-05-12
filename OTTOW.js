@@ -1,5 +1,8 @@
-//ratingValue field in JSON data on imdb. 
+//shoobadooob
 
+
+//ratingValue field in JSON data on imdb. 
+var title = "";
 
 const https = require('https');
 
@@ -24,6 +27,9 @@ https.get('https://www.imdb.com/title/tt2911666/', (resp) => {
 }).on("error", (err) => {
   console.log("Error: " + err.message);
 });
+
+
+
 
 https.get('https://www.rottentomatoes.com/m/pokemon_detective_pikachu', (resp) => {
   let rotData = '';
