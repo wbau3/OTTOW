@@ -1,9 +1,19 @@
-//shoobadooob
 
-
-//ratingValue field in JSON data on imdb. 
-var title = "";
 const https = require('https');
+
+var title ="";
+
+
+var movie  = {
+  Title: "",
+  Rating: "",
+  RTperc: "",
+  Budget: "",
+  Domestic: "",
+  Foreign: ""
+
+};
+
 
 
 main();
@@ -11,8 +21,10 @@ main();
 async function main(){
   
 
-var titlewait = await getInput();
-var urlwait = await getURLs();
+
+var step1 = await getInput();
+var step2 = await getURLs(step1);
+var printwait = await print(step2);
 
 }
 //console.log("title variable: " + title);
@@ -42,9 +54,12 @@ async function getInput() {
 }
 
 
-function getURLs() {
 
 
+
+async function getURLs(waiting) {
+
+  
   return new Promise(resolve => {
 
   var imdbURL = "";
@@ -136,21 +151,17 @@ function getURLs() {
 
   resp.on('end', () => {
 
-      //console.log(bdata);
       resultIndex = bdata.indexOf("https://www.boxofficemojo.com/");
-      //console.log("bom resultIndex: " + resultIndex);
       indexEnd = bdata.indexOf("htm", resultIndex);
-      //console.log("bom indexEnd: " + indexEnd);
       var codedURI = bdata.slice(resultIndex, indexEnd + 3);
       bomURL = decodeURIComponent(codedURI);
       //bomURL = "https://www.boxofficemojo.com/movies/?id=matrix.htm";
-      console.log("bomURL: " + bomURL);
       getBOMdata(bomURL);
     
   })
 
 });
-      resolve();
+      resolve(waiting);
   });//end of promise
 }
 
@@ -171,11 +182,10 @@ https.get(imdbURL, (resp) => {
   // The whole response has been received. Print out the result.
   resp.on('end', () => {
       
+      movie.Title = data.slice((data.indexOf("<title>") + 7), data.indexOf("-", data.indexOf("<title>")) - 1);
       var ratingIndex = data.indexOf('ratingValue');
-      var yearIndex = data.indexOf('datePublished');
-      var year = data.substring(yearIndex + 17, yearIndex + 21);
-      var rating = data.substring(ratingIndex + 15, ratingIndex + 18);
-    console.log("Rating:" + rating + ' ' + 'Year: ' + year);
+      movie.Rating = data.substring(ratingIndex + 15, ratingIndex + 18);
+    //console.log("Title: " + title + " Rating:" + rating);
   });
 
 }).on("error", (err) => {
@@ -204,8 +214,8 @@ async function getRTdata(rtURL) {
   resp.on('end', () => {
 
     var rotRatingIndex = rtData.indexOf("ratingValue");
-    var rotRating = rtData.slice(rotRatingIndex + 13, rotRatingIndex + 15);
-    console.log("Rotten tomatoes rating: " + rotRating + "%");
+    movie.RTperc = rtData.slice(rotRatingIndex + 13, rotRatingIndex + 15);
+    //console.log("Rotten tomatoes rating: " + rotRating + "%");
   });
 
 }).on("error", (err) => {
@@ -235,15 +245,16 @@ async function getBOMdata(bomURL) {
   //The whole response has been received. Print out the selected data.
   resp.on('end', () => {
 
-    var budgetIndex = data.indexOf("Production Budget:");
-    var domesticIndex = data.indexOf("Domestic Total Gross:");
+    var budgetIndex = data.indexOf("$", data.indexOf("Production Budget:"));
+    var domesticIndex = data.indexOf("$", data.indexOf("Domestic Total Gross:"));
     var foreignIndex = data.indexOf("$", data.indexOf("Foreign:"));
 
-    var budget = data.slice(budgetIndex, data.indexOf(" ", budgetIndex));
-    var domestic = data.slice(domesticIndex, data.indexOf(" ", domesticIndex));
-    var foreign = data.slice(foreignIndex, data.indexOf(" ", foreignIndex));
+    movie.Budget = data.slice(budgetIndex, data.indexOf("<", budgetIndex));
+    movie.Domestic = data.slice(domesticIndex, data.indexOf("<", domesticIndex));
+    movie.Foreign = data.slice(foreignIndex, data.indexOf("<", foreignIndex));
     
-    console.log("Production Budget: " + budget + " | Domestic Gross: " + domestic + " | Foreign Gross: " + foreign);
+    //console.log(movie);
+    
   });
 
 }).on("error", (err) => {
@@ -256,6 +267,17 @@ async function getBOMdata(bomURL) {
 }// end of getBOMdata
 
 
+async function print(stillwaiting){
+  return new Promise(resolve => {
+
+      console.log(movie);
+
+      resolve(stillwaiting);
+  });
+
+}
+
+
 
 
 
@@ -263,23 +285,10 @@ async function getBOMdata(bomURL) {
 
 /*
 To do
-General
-    -Actors/actresses
-    -Links to all pages for the movie
-    -Release year
-    -MPAA Rating
-    -Personal watch list
 
--Locate correct IMDB page from search term
--Grab ratingValue field
--Display year for the movie
--Display director??
+-Display director
 
--Get rotten tomatoes score
 
--Box Office Mojo info??
-    -Gross income
-    - ..?
 
 
 */
