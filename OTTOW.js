@@ -18,6 +18,7 @@ var movie  = {
 
 main();
 
+
 async function main(){
   
 
@@ -267,19 +268,32 @@ async function getBOMdata(bomURL) {
 }// end of getBOMdata
 
 
-async function print(stillwaiting){
+async function print(){
   return new Promise(resolve => {
 
       console.log(movie);
 
-      resolve(stillwaiting);
+      resolve();
+    loop();
   });
 
 }
 
 
 
+function loop(){
+  
+  
+  movie.Title = "";
+  movie.Rating = "";
+  movie.RTperc = "";
+  movie.Budget = "";
+  movie.Domestic = "";
+  movie.Foreign = "";
+  
+main();
 
+} // end of loop function
 
 
 
